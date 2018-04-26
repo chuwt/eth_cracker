@@ -32,6 +32,7 @@ class Connector(object):
             else:
                 url = await self.queue.get()
                 if url.startswith('end'):
+                    await self.queue.put('end')
                     break
                 else:
                     try:
@@ -45,7 +46,7 @@ class Connector(object):
     async def main(self):
         task_list = list()
         task_list.append(asyncio.ensure_future(self.get_ips()))
-        task_list += [asyncio.ensure_future(self.geth_connector()) for _ in range(1)]
+        task_list += [asyncio.ensure_future(self.geth_connector()) for _ in range(5)]
         await asyncio.wait(task_list)
 
     def run(self):
